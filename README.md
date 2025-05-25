@@ -16,7 +16,8 @@ To start you should create and activate a virtual environment:
 
  $ python -m venv env        # use `virtualenv env` for Python2, use `python3 ...` for Python3 on Linux & macOS   
  $ source env/bin/activate   # use `env\Scripts\activate` on Windows   
- $ pip install -r requirements.txt   
+ $ pip install -r requirements.txt
+ $ deactivate   
 
 This web application has been tested on Python 3.10.13. If you have problems running this app, it is recommended that you downgrade to Python 3.10.13. Instructions on how to do this (on Mac with M1 chip) are here: https://stackoverflow.com/questions/62898911/how-to-downgrade-python-version-from-3-8-to-3-7-mac (replacing 3.7 with 3.10.13).
 
