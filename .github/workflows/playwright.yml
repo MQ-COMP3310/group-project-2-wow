@@ -22,10 +22,8 @@ jobs:
           --health-retries 5
         volumes:
           - .:/app
-        working-directory: /app
         env:
           FLASK_APP: run.py
-        command: ["bash", "-c", "python run.py"]
 
     steps:
       - uses: actions/checkout@v3
@@ -42,6 +40,10 @@ jobs:
 
       - name: Initialize database
         run: python initialise_db.py
+
+      - name: Run Flask app in background
+        run: |
+          nohup python run.py &
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
