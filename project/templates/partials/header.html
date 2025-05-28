@@ -1,31 +1,15 @@
 <header>
-    <div id="header-loader"></div>
-        
     <div class="header-container">
         <div id="logo-text" class="heading-container" title="Home page">
             <a class="logo-text" href="/">Cloud Photos</a>
         </div>
-
         <div class="navigation-links-container">
-            <div class="navigation-buttons-container">
-                <div class="icon-container highlight white">
-                    <img src="{{ url_for('static', filename='icons/community.png') }}" alt="community">
-                </div>
-            </div>
-            
-            {% if logged_in %}
-            <div class="link-box">
-                Logout
-            </div>
+            {% if current_user.is_authenticated %}
+                <div class="link-box"><a href="{{ url_for('auth.logout') }}" style="color: white; text-decoration: none;">Logout</a></div>
             {% else %}
-            <div class="link-box">
-                Login
-            </div>  
-                
-            <div class="link-box">
-                Sign up
-            </div>
+                <div class="link-box"><a href="{{ url_for('auth.login') }}" style="color: white; text-decoration: none;">Login</a></div>
+                <div class="link-box"><a href="{{ url_for('auth.signup') }}" style="color: white; text-decoration: none;">Sign up</a></div>
             {% endif %}
         </div>
-    </div>  
-</header>   
+    </div>
+</header>
