@@ -62,3 +62,9 @@ You can run the website by typing:
 - python run.py 
 
 You can now browse to the url http://localhost:8000/ to view the website.
+
+# Setting Up Environment for Playwright Tests
+First cd into the project directory then:
+- run ./install_playwright.ps1
+
+This will install the necessary Playwright packages for the playwright_tests.ts to run.
