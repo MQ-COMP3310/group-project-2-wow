@@ -11,11 +11,16 @@ test('login and upload photo', async ({ page }) => {
 
   await page.goto('http://localhost:8000/upload/');
   const fileInput = await page.$('input[type="file"]');
-  await fileInput.setInputFiles('tests/assets/sample.jpg');
-
+  if(fileInput){
+    await fileInput.setInputFiles('tests/assets/sample.jpg');
+  }
+  else{
+    throw new Error("sample.jpeg not found");
+  }
+  
   await page.fill('input[name="caption"]', 'Test Image');
   await page.fill('textarea[name="description"]', 'Test Description');
   await page.click('text=Upload');
 
-  await expect(page).toHaveText('New Photo Successfully Created');
+  await expect(page.locator('.flash')).toHaveText('New Photo admin Successfully Created');
 });

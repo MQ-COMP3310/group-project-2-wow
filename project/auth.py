@@ -26,6 +26,7 @@ def login():
 		
 		# Flash if username or password is invalid
 		flash("Invalid username or password.")
+		return redirect(url_for("main.homepage"))
 	else:
 		# Return the login.html page if the request is GET
 		return render_template("login.html")
