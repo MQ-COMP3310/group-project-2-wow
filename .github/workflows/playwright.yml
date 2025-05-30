@@ -50,7 +50,7 @@ jobs:
       - name: Run Playwright tests
         env:
           BASE_URL: http://localhost:8000
-        run: npx playwright ../../project/tests/playwright_tests.ts
+        run: npx playwright '../../project/tests/playwright_tests.ts'
 
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4
