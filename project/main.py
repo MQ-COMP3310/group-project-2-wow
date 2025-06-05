@@ -22,9 +22,14 @@ main = Blueprint("main", __name__)
 def homepage():
   # Check if the user is logged in and if so then query/filter photos alphabetically (only the ones that match the current user's id)
   # Then return index.html with the photos that were queried from the DB
-  photos = (
-    db.session.query(Photo).filter_by(user_id = current_user.id).order_by(asc(Photo.file)) if current_user.is_authenticated else []
-  )
+  # If user is admin then return all photos
+  if current_user.is_authenticated:
+    if current_user.isAdmin:
+        photos = db.session.query(Photo).order_by(asc(Photo.file)).all()
+    else:
+       photos = db.session.query(Photo).filter_by(user_id=current_user.id).order_by(asc(Photo.file)).all()
+  else:
+    photos = []
   return render_template("index.html", photos = photos)
 
 
@@ -80,11 +85,12 @@ def newPhoto():
 @login_required
 def editPhoto(photo_id):
   # Query the DB to find the photo that needs to be edited and return a 404 if it can't be found (note the filter_by method also includes the user_id field now)
-  editedPhoto = (
-    db.session.query(Photo)
-    .filter_by(id = photo_id, user_id = current_user.id)
-    .first_or_404()
-  )
+  # If user is admin, return query for all photos otherwise only the ones that the user owns
+  if current_user.isAdmin:
+    editedPhoto = db.session.query(Photo).filter_by(id = photo_id).first_or_404()
+  else:
+    editedPhoto = (db.session.query(Photo).filter_by(id = photo_id, user_id = current_user.id).first_or_404())
+  
   # Update the photo if the request is POST and photo_id is valid (given form details)
   if request.method == "POST":
     editedPhoto.name = request.form['user']
@@ -106,12 +112,12 @@ def editPhoto(photo_id):
 @login_required
 def deletePhoto(photo_id):
   # Query the DB to find the photo that needs to be deleted and if it can't be found then return a 404
-  photo = (
-    db.session.query(Photo)
-    .filter_by(id = photo_id, user_id = current_user.id)
-    .first_or_404()
-  )
-
+  # If user is admin then return all photos
+  if current_user.isAdmin:
+    photo = db.session.query(Photo).filter_by(id = photo_id).first_or_404()
+  else:
+    photo = (db.session.query(Photo).filter_by(id = photo_id, user_id = current_user.id).first_or_404())
+  
   # If photo has been found (meaning the photo_id is valid and user_id is valid) then delete it, update the DB and return to the home page
   filepath = os.path.join(current_app.config["UPLOAD_DIR"], photo.file)
 

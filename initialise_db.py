@@ -10,6 +10,8 @@ def populate_db():
   # password: adminpass
   user = User(username = "admin")
   user.set_password("adminpass")
+  user.set_admin()
+  
   session.add(user)
   session.commit()
 
