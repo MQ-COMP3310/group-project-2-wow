@@ -1,3 +1,4 @@
+# Option 1: Simple approach (recommended)
 name: Playwright Tests
 
 on:
@@ -10,23 +11,8 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
 
-    services:
-      flask:
-        image: python:3.11
-        ports:
-          - 8000:8000
-        options: >-
-          --health-cmd "curl -f http://localhost:8000 || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        volumes:
-          - .:/app
-        env:
-          FLASK_APP: run.py
-
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -43,10 +29,15 @@ jobs:
 
       - name: Run Flask app in background
         run: |
-          nohup python run.py &
+          python run.py &
+          sleep 5  # Give Flask time to start
+
+      - name: Wait for Flask to be ready
+        run: |
+          timeout 30 bash -c 'until curl -f http://localhost:8000; do sleep 1; done'
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
 
@@ -59,4 +50,12 @@ jobs:
       - name: Run Playwright tests
         env:
           BASE_URL: http://localhost:8000
-        run: npx playwright test
+        run: npx playwright '../../project/tests/playwright_tests.ts'
+
+      - name: Upload Playwright Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
