@@ -8,5 +8,5 @@
       "resolveJsonModule": true,
       "types": ["@playwright/test"]
     },
-    "include": ["tests/**/*.ts"]
+    "include": ["project/tests/playwright_tests.spec.ts"]
 }
