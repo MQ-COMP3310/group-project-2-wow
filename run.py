@@ -6,8 +6,8 @@ import subprocess
 if __name__ == '__main__':
   # Install playwright packages
   script_path = 'install_playwright.ps1'
+  
   # Only run PowerShell install script on Windows
-
   if platform.system() == "Windows":
     try:
       subprocess.run(["powershell", "-ExecutionPolicy", "Bypass", "-File", script_path], check=True)

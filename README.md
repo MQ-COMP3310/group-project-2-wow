@@ -66,6 +66,7 @@ You can now browse to the url http://localhost:8000/ to view the website.
 # Setting Up Environment for Playwright Tests
 First cd into the project directory then `run ./install_playwright.ps1`
 This will install the necessary Playwright packages for the playwright_tests.spec.ts to run.
+Note that run.py already calls this powershell script and installs the necessary packages. This is done so that it is easier to run the playwright tests as seen below.
 
 # Running Playwright Tests
 The test file exists under /project/tests/playwright_tests.spec.ts
