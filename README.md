@@ -64,7 +64,9 @@ You can run the website by typing:
 You can now browse to the url http://localhost:8000/ to view the website.
 
 # Setting Up Environment for Playwright Tests
-First cd into the project directory then:
-- run ./install_playwright.ps1
+First cd into the project directory then `run ./install_playwright.ps1`
+This will install the necessary Playwright packages for the playwright_tests.spec.ts to run.
 
-This will install the necessary Playwright packages for the playwright_tests.ts to run.
+# Running Playwright Tests
+The test file exists under /project/tests/playwright_tests.spec.ts
+From anywhere in the project directory, open a new terminal and run `npx playwright test` to run the test file
