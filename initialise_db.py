@@ -9,7 +9,7 @@ def populate_db():
   # username: admin
   # password: adminpass
   user = User(username = "admin")
-  user.set_password("adminpass")
+  user.set_password("admin")
   user.set_admin()
   
   session.add(user)

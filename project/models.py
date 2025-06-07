@@ -8,11 +8,11 @@ class User(UserMixin, db.Model):
   id = db.Column(db.Integer, primary_key = True)
   username = db.Column(db.String(50), unique = True, nullable = False)
   password_hash = db.Column(db.String(128), nullable = False)
-  isAdmin = db.Column(db.Boolean, default=False)
+  is_admin = db.Column(db.Boolean, default=False)
 
   # Method to set user to admin
   def set_admin(self):
-    self.isAdmin = True
+    self.is_admin = True
 
   # Given a password, hash the password (scrypt by default) before saving it (which will then be stored in the DB)
   def set_password(self, password):
