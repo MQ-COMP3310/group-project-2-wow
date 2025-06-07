@@ -40,6 +40,10 @@ def signup():
 		username = request.form["username"]
 		password = request.form["password"]
 
+		if username == "" or password == "":
+			flash("Invalid username or password field.")
+			return redirect(url_for("auth.signup"))
+
 		# If the username already exists then let the user know and redirect them back to the signup page
 		if User.query.filter_by(username = username).first():
 			flash("Username already exists.")

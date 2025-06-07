@@ -44,8 +44,12 @@ def display_file(name):
 # User is required to be logged in, comes from the LoginManager instance --> this will auto redirect to "auth.login" (set in init.py) if the user isn't logged in
 @login_required
 def newPhoto():
+
   # If the request is a POST method then get the photo details that the user has entered and upload it to the DB
   if request.method == "POST":
+    if request.form["name"] == "" or request.form["caption"] == "" or request.form["description"] == "":
+      flash("User, Caption and Description fields cannot be left empty.")
+      return redirect(request.url)
     file = None
     if "fileToUpload" in request.files:
       file = request.files.get("fileToUpload")
@@ -53,22 +57,22 @@ def newPhoto():
       flash("Invalid request!", "error")
 
     if not file or not file.filename:
-      flash("No file selected!", "error")
+      flash("No file selected!")
       return redirect(request.url)
 
     filepath = os.path.join(current_app.config["UPLOAD_DIR"], file.filename)
     file.save(filepath)
 
-    # current_user.id is the new field used for the auth mechanism
+    # current_user.id is the new field used for the auth mechanism    
     newPhoto = Photo(
-      name = current_user.username,
+      name = request.form["name"],
       caption = request.form["caption"],
       description = request.form["description"],
       file = file.filename,
       user_id = current_user.id,
     )
 
-    flash('New Photo %s Successfully Created' % newPhoto.name)
+    flash('New Photo Successfully Created')
 
     db.session.add(newPhoto)
     db.session.commit()
@@ -159,26 +163,26 @@ def adminUsersAction(user_id):
   if modificationAction == "delete":
     if userToModify.id == current_user.id:
       flash('Admins cannot delete themselves.', 'error')
-      return redirect(url_for("adminPanel.html"))
+      return redirect('/admin/users')
     db.session.delete(userToModify)
   
   # If the action was to promote a user then first check that the user isn't already an admin and the give them admin privileges
   elif modificationAction == "promote":
     if userToModify.is_admin:
       flash('User is already admin')
-      return redirect(url_for("adminPanel.html"))
+      return redirect('/admin/users')
     else:
       userToModify.set_admin()
   
   # If any other action was specified then warn the user and redirect them to the admin panel
   else:
       flash('Invalid action.')
-      return redirect(url_for("adminPanel.html"))
+      return redirect('/admin/users')
 
   # Commit all changes to the DB and let the user know that this has been successfully done
   db.session.commit()
   flash('User Access Successfully Modified %s' % userToModify.username)
-  return redirect(url_for("main.homepage"))
+  return redirect('/admin/users')
 
 # Route to favourite a photo
 @main.route("/photo/<int:photo_id>/favourite", methods = ["POST"])
