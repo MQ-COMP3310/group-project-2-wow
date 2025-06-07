@@ -32,3 +32,4 @@ class Photo(db.Model):
   file = db.Column(db.String(250), nullable = False)
   description = db.Column(db.String(600), nullable = True)
   user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
+  favourite = db.Column(db.Boolean, default = False)

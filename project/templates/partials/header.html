@@ -10,10 +10,19 @@
                     <a href="{{ url_for('main.adminUsersList') }}" style="color: white; text-decoration: none;">Admin Panel</a>
                 </div>
                 {% endif %}
-                <div class="link-box"><a href="{{ url_for('auth.logout') }}" style="color: white; text-decoration: none;">Logout</a></div>
+                <div class="link-box">
+                    <a href="{{ url_for('main.favourites_page') }}" style="color: white; text-decoration: none;">Favourites</a>
+                </div>
+                <div class="link-box">
+                    <a href="{{ url_for('auth.logout') }}" style="color: white; text-decoration: none;">Logout</a>
+                </div>
             {% else %}
-                <div class="link-box"><a href="{{ url_for('auth.login') }}" style="color: white; text-decoration: none;">Login</a></div>
-                <div class="link-box"><a href="{{ url_for('auth.signup') }}" style="color: white; text-decoration: none;">Sign up</a></div>
+                <div class="link-box">
+                    <a href="{{ url_for('auth.login') }}" style="color: white; text-decoration: none;">Login</a>
+                </div>
+                <div class="link-box">
+                    <a href="{{ url_for('auth.signup') }}" style="color: white; text-decoration: none;">Sign up</a>
+                </div>
             {% endif %}
         </div>
     </div>

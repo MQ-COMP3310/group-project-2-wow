@@ -179,3 +179,22 @@ def adminUsersAction(user_id):
   db.session.commit()
   flash('User Access Successfully Modified %s' % userToModify.username)
   return redirect(url_for("main.homepage"))
+
+# Route to favourite a photo
+@main.route("/photo/<int:photo_id>/favourite", methods = ["POST"])
+@login_required
+def toggle_favourite(photo_id):
+    # If the user is logged in and a POST request is sent to this route then find the photo that the user wants to (un)favourite and commit this change to the DB
+    photo = db.session.query(Photo).filter_by(id=photo_id, user_id=current_user.id).first_or_404()
+    photo.favourite = not photo.favourite
+    db.session.commit()
+    return redirect(url_for("main.homepage"))
+
+# Route to visit the favourites page
+@main.route("/favourites", methods = ["GET"])
+@login_required
+def favourites_page():
+    # Return all the photos that match the user id (so that admins don't see everyones favourite photo) and where the favourite field is true
+    # Then render this through the favourites.html page
+    photos = db.session.query(Photo).filter_by(user_id=current_user.id, favourite=True).all()
+    return render_template("favourites.html", photos=photos)

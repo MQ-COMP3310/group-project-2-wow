@@ -58,6 +58,16 @@
                       <img src="{{ url_for('static', filename='icons/delete.png') }}" title="Delete this photo" alt="delete">
                   </div>
               </a>
+
+              <form method="POST" action="{{ url_for('main.toggle_favourite', photo_id=photo.id) }}">
+                <button title="Toggle Favourite" class="icon-container" style="background: none; border: none; padding: 0; cursor: pointer;">
+                  {% if photo.favourite %}
+                    <img src="{{ url_for('static', filename='icons/star-filled.png') }}" alt="Unfavourite">
+                  {% else %}
+                    <img src="{{ url_for('static', filename='icons/star-outline.png') }}" alt="Favourite">
+                  {% endif %}
+                </button>
+              </form>
             </div>
         </div>
     </div>
