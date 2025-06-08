@@ -65,7 +65,15 @@ test('Invalid Upload Attempt', async ({ page }) => {
   await page.getByRole('button', { name: 'Upload' }).click();
   await expect(page.locator('.flash-message.message')).toContainText('No file selected!');
 
-  // Upload the same file again from ./assets with valid fields, there should be a flash message since the file already exists
+  // Upload the same file twice from ./assets with valid fields, there should be a flash message since the file already exists
+  await page.goto(`${baseURL}/upload`);
+  await page.setInputFiles('input[type = "file"]', 'project/tests/assets/sample.jpg');
+  await page.fill('input[name = "name"]', 'asdf');
+  await page.fill('input[name = "caption"]', 'asdf');
+  await page.fill('textarea[name = "description"]', 'asdf');
+  await page.getByRole('button', { name: 'Upload' }).click();
+  await expect(page.locator('.flash-message.message')).toContainText('New Photo Successfully Created');
+
   await page.goto(`${baseURL}/upload`);
   await page.setInputFiles('input[type = "file"]', 'project/tests/assets/sample.jpg');
   await page.fill('input[name = "name"]', 'asdf');
@@ -84,7 +92,7 @@ test('Valid Upload Attempt', async ({ page }) => {
 
   // Upload the file from ./assets with valid fields
   await page.goto(`${baseURL}/upload`);
-  await page.setInputFiles('input[type = "file"]', 'project/tests/assets/sample2.jpg');
+  await page.setInputFiles('input[type = "file"]', 'project/tests/assets/sampletwo.jpg');
   await page.fill('input[name = "name"]', 'test');
   await page.fill('input[name = "caption"]', 'caption');
   await page.fill('textarea[name = "description"]', 'description');
