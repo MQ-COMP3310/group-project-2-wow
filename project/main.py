@@ -10,12 +10,22 @@ from flask import (
 )
 from flask_login import login_required, current_user
 from .models import Photo, User
-from sqlalchemy import asc, text
+from sqlalchemy import asc
 from . import db
-import os
+from werkzeug.utils import secure_filename
+import os, re
 
 # Create the main blueprint
 main = Blueprint("main", __name__)
+
+# Function that removes special characters given an input and returns the according input/type
+def remove_special_characters(input):
+  # Remove special characters
+  clean_input = re.sub(r'[^a-zA-Z0-9\s]', '', input)
+  # Return int or string according to whatever the type for input was
+  if(input.isdigit()):
+    return int(clean_input)
+  return clean_input
 
 # Route for homepage
 @main.route("/")
@@ -33,11 +43,11 @@ def homepage():
   return render_template("index.html", photos = photos)
 
 
-# Route for uploads given an image name
+# Route for uploads given a filtered image name
 @main.route("/uploads/<name>")
 @login_required
 def display_file(name):
-  return send_from_directory(current_app.config["UPLOAD_DIR"], name)
+  return send_from_directory(current_app.config["UPLOAD_DIR"], remove_special_characters(name))
 
 
 # Route for upload page with GET and POST requests
@@ -45,7 +55,6 @@ def display_file(name):
 # User is required to be logged in, comes from the LoginManager instance --> this will auto redirect to "auth.login" (set in init.py) if the user isn't logged in
 @login_required
 def newPhoto():
-
   # If the request is a POST method then get the photo details that the user has entered and upload it to the DB
   if request.method == "POST":
     if request.form["name"] == "" or request.form["caption"] == "" or request.form["description"] == "":
@@ -61,14 +70,16 @@ def newPhoto():
       flash("No file selected!")
       return redirect(request.url)
 
+    # Sanitise file name using the secure_filename function from werkzeug library
+    file.filename = secure_filename(file.filename)
     filepath = os.path.join(current_app.config["UPLOAD_DIR"], file.filename)
     file.save(filepath)
 
     # current_user.id is the new field used for the auth mechanism    
     newPhoto = Photo(
-      name = request.form["name"],
-      caption = request.form["caption"],
-      description = request.form["description"],
+      name = remove_special_characters(request.form["name"]),
+      caption = remove_special_characters(request.form["caption"]),
+      description = remove_special_characters(request.form["description"]),
       file = file.filename,
       user_id = current_user.id,
     )
@@ -89,6 +100,7 @@ def newPhoto():
 @main.route("/photo/<int:photo_id>/edit/", methods = ["GET", "POST"])
 @login_required
 def editPhoto(photo_id):
+  photo_id = remove_special_characters(photo_id)
   # Query the DB to find the photo that needs to be edited and return a 404 if it can't be found (note the filter_by method also includes the user_id field now)
   # If user is admin, return query for all photos otherwise only the ones that the user owns
   if current_user.is_admin:
@@ -98,9 +110,9 @@ def editPhoto(photo_id):
   
   # Update the photo if the request is POST and photo_id is valid (given form details)
   if request.method == "POST":
-    editedPhoto.name = request.form['user']
-    editedPhoto.caption = request.form["caption"]
-    editedPhoto.description = request.form["description"]
+    editedPhoto.name = remove_special_characters(request.form['user'])
+    editedPhoto.caption = remove_special_characters(request.form["caption"])
+    editedPhoto.description = remove_special_characters(request.form["description"])
 
     db.session.add(editedPhoto)
     db.session.commit()
@@ -156,9 +168,9 @@ def adminUsersAction(user_id):
     flash('Cannot access page, admin privileges required.')
     return redirect(url_for("main.homepage"))
   
-  # If user is admin the query and find the user object that needs to be modified and find out what the action was using the form data
+  # If user is admin the query and find the user object that needs to be modified and find out what the action was using the form data (which is sanitised)
   userToModify = db.session.query(User).filter_by(id = user_id).first_or_404()
-  modificationAction = request.form['action']
+  modificationAction = remove_special_characters(request.form['action'])
 
   # If action was delete then first check that the user isn't deleting themselves and then delete the user specified
   if modificationAction == "delete":
@@ -189,6 +201,8 @@ def adminUsersAction(user_id):
 @main.route("/photo/<int:photo_id>/favourite", methods = ["POST"])
 @login_required
 def toggle_favourite(photo_id):
+    # Sanitise photo_id
+    photo_id = remove_special_characters(photo_id)
     # If the user is logged in and a POST request is sent to this route then find the photo that the user wants to (un)favourite and commit this change to the DB
     photo = db.session.query(Photo).filter_by(id=photo_id, user_id=current_user.id).first_or_404()
     photo.favourite = not photo.favourite
