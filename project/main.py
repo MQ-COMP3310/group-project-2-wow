@@ -40,13 +40,11 @@ def homepage():
     photos = []
   return render_template("index.html", photos = photos)
 
-
 # Route for uploads given a filtered image name
 @main.route("/uploads/<name>")
 @login_required
-def display_file(name):
-  return send_from_directory(current_app.config["UPLOAD_DIR"], remove_special_characters(name))
-
+def display_file(name): 
+  return send_from_directory(current_app.config["UPLOAD_DIR"], secure_filename(name))
 
 # Route for upload page with GET and POST requests
 @main.route("/upload/", methods = ["GET", "POST"])
@@ -71,6 +69,12 @@ def newPhoto():
     # Sanitise file name using the secure_filename function from werkzeug library
     file.filename = secure_filename(file.filename)
     filepath = os.path.join(current_app.config["UPLOAD_DIR"], file.filename)
+
+    # Check if file already exists
+    if os.path.exists(filepath):
+      flash("A file with this name already exists")
+      return redirect(request.url)
+
     file.save(filepath)
 
     # current_user.id is the new field used for the auth mechanism    

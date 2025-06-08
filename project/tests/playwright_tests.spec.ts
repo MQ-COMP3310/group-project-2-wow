@@ -64,6 +64,15 @@ test('Invalid Upload Attempt', async ({ page }) => {
   await page.fill('textarea[name = "description"]', 'description');
   await page.getByRole('button', { name: 'Upload' }).click();
   await expect(page.locator('.flash-message.message')).toContainText('No file selected!');
+
+  // Upload the same file again from ./assets with valid fields, there should be a flash message since the file already exists
+  await page.goto(`${baseURL}/upload`);
+  await page.setInputFiles('input[type = "file"]', 'project/tests/assets/sample.jpg');
+  await page.fill('input[name = "name"]', 'asdf');
+  await page.fill('input[name = "caption"]', 'asdf');
+  await page.fill('textarea[name = "description"]', 'asdf');
+  await page.getByRole('button', { name: 'Upload' }).click();
+  await expect(page.locator('.flash-message.message')).toContainText('A file with this name already exists');
 });
 
 test('Valid Upload Attempt', async ({ page }) => {
@@ -75,7 +84,7 @@ test('Valid Upload Attempt', async ({ page }) => {
 
   // Upload the file from ./assets with valid fields
   await page.goto(`${baseURL}/upload`);
-  await page.setInputFiles('input[type = "file"]', 'project/tests/assets/sample.jpg');
+  await page.setInputFiles('input[type = "file"]', 'project/tests/assets/sample2.jpg');
   await page.fill('input[name = "name"]', 'test');
   await page.fill('input[name = "caption"]', 'caption');
   await page.fill('textarea[name = "description"]', 'description');
@@ -220,7 +229,7 @@ test('Favourites Functionality', async ({ page }) => {
   }
 });
 
-test('SQL Injection on Login', async ({ page }) => {
+test('SQL Injection/Invalid Characters on Login', async ({ page }) => {
   // Go to login page
   await page.goto(`${baseURL}/login`);
 
@@ -233,7 +242,7 @@ test('SQL Injection on Login', async ({ page }) => {
   await expect(page.locator('.flash-message.message')).toContainText('Invalid username or password.');
 });
 
-test('SQL Injection on Sign Up', async ({ page }) => {
+test('SQL Injection/Invalid Characters on Sign Up', async ({ page }) => {
   // Go to signup page
   await page.goto(`${baseURL}/signup`);
 
@@ -242,17 +251,54 @@ test('SQL Injection on Sign Up', async ({ page }) => {
   await page.fill('input[name="password"]', 'any');
   await page.getByRole('button', { name: 'Sign Up' }).click();
 
-  // Account should be created given that the input will be sanitised
-  await expect(page.locator('.flash-message.message')).toContainText('Account created.');
+  // Expected output is a flash message
+  await expect(page.locator('.flash-message.message')).toContainText('Invalid username or password.');
+});
 
-  // Go to login page
+test('Special Characters in Photo Description', async ({ page }) => {
+  // Log in as admin
   await page.goto(`${baseURL}/login`);
-
-  // Input the same credentials
-  await page.fill('input[name="username"]', `' OR '1'='1`);
-  await page.fill('input[name="password"]', 'any');
+  await page.fill('input[name = "username"]', 'admin');
+  await page.fill('input[name = "password"]', 'admin');
   await page.getByRole('button', { name: 'Login' }).click();
 
-  // User should be logged in given that the inputs will be filtered the same way again
-  await expect(page.locator('.flash-message.message')).toContainText('Logged in successfully.');
+  // Go to photo edit page for photo id 1
+  await page.goto(`${baseURL}/photo/1/edit/`);
+
+  // Set description to "!"
+  await page.fill('textarea[name = "description"]', '!');
+  await page.getByRole('button', { name: 'Save' }).click();
+
+  // Go back to edit page and ensure that the invalid character has been removed from the description
+  await page.goto(`${baseURL}/photo/1/edit/`);
+  const descriptionValue = await page.getByLabel('description').inputValue();
+  expect(descriptionValue).toBe('');
+});
+
+test('Prevent file traversal during photo upload', async ({ page }) => {
+  // Log in as admin
+  await page.goto(`${baseURL}/login`);
+  await page.fill('input[name = "username"]', 'admin');
+  await page.fill('input[name = "password"]', 'admin');
+  await page.getByRole('button', { name: 'Login' }).click();
+
+  // Go to the upload page
+  await page.goto(`${baseURL}/upload`);
+
+  // Fill form with traversal input in name
+  await page.fill('input[name="name"]', '../../etc/passwords');
+  await page.fill('input[name="caption"]', 'Attempted Traversal');
+  await page.fill('textarea[name="description"]', 'Testing traversal filter');
+
+  // Upload image file
+  const filePath = 'project/tests/assets/sample.jpg';
+  await page.setInputFiles('input[type="file"]', filePath);
+
+  // Submit the form
+  await page.getByRole('button', { name: 'Upload' }).click();
+
+  // Go to homepage and confirm that there is no "../" in HTML
+  await page.goto(`${baseURL}/`);
+  const content = await page.content();
+  expect(content).not.toMatch(/\.\.\//);
 });

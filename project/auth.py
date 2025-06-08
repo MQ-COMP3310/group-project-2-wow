@@ -2,9 +2,15 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required
 from .models import User
 from . import db
+import re
 
 # Create a blueprint called auth --> gets used in __init__.py
 auth = Blueprint("auth", __name__)
+
+# Function that returns true or false if the input is safe and matches the regex
+def is_safe_input(input):
+  input_to_check = str(input)
+  return bool(re.fullmatch(r'[a-zA-Z0-9\s]*', input_to_check))
 
 # Handles the login page route with GET and POST methods
 @auth.route("/login", methods = ["GET", "POST"])
@@ -13,6 +19,11 @@ def login():
 	if request.method == "POST":
 		username = request.form["username"]
 		password = request.form["password"]
+
+		# If the username or password isn't safe then flash the user and return them to the login page
+		if not is_safe_input(username) or not is_safe_input(password):
+			flash("Invalid username or password.")
+			return render_template("login.html")
 
 		# Get the User instance
 		user = User.query.filter_by(username = username).first()
@@ -31,7 +42,6 @@ def login():
 		# Return the login.html page if the request is GET
 		return render_template("login.html")
 
-
 # Handles the signup page route with GET and POST methods
 @auth.route("/signup", methods = ["GET", "POST"])
 def signup():
@@ -39,6 +49,11 @@ def signup():
 	if request.method == "POST":
 		username = request.form["username"]
 		password = request.form["password"]
+
+		# If the username or password isn't safe then flash the user and return them to the sign up page
+		if not is_safe_input(username) or not is_safe_input(password):
+			flash("Invalid username or password.")
+			return redirect(url_for("auth.signup"))
 
 		if username == "" or password == "":
 			flash("Invalid username or password field.")
@@ -59,7 +74,6 @@ def signup():
 	else:
 		# If the request is GET then return the signup.html page
 		return render_template("signup.html")
-
 
 # Handles logging out --> Call the logout_user() function and then redirect them to the main homepage
 @auth.route("/logout")

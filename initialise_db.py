@@ -22,76 +22,76 @@ def populate_db():
       name = "William Warby",
       caption = "Gentoo penguin",
       description = "A penguin with an orange beak standing next to a rock.",
-      file = "william-warby-_A_vtMMRLWM.jpg",
+      file = "williamA.jpg",
       user_id = user.id
     ),
     Photo(
       name = "Javier Patino Loira",
       caption = "Common side-blotched lizard",
       description = "A close up of a lizard on a rock.",
-      file = "javier-patino-loira-nortqDjv7ak.jpg",
+      file = "javier.jpg",
       user_id = user.id
     ),
     Photo(
       name = "Jordie Rubies",
       caption = "Griffin vulture flying",
       description = "A large bird flying through a blue sky.",
-      file = "jordi-rubies-2wNkdL2oIyU.jpg",
+      file = "jordi.jpg",
       user_id = user.id
     ),
     Photo(
       name = "Jakub Neskora",
       caption = "Jaguar",
       description = "A close up of a leopard near a rock.",
-      file = "jakub-neskora-jloJvr74Fcc.jpg",
+      file = "jakub.jpg",
       user_id = user.id
     ),
     Photo(
       name = "William Warby",
       caption = "Japanese macaque",
       description = "A monkey sitting on top of a wooden post.",
-      file = "william-warby-ndWikw_TPfc.jpg",
+      file = "williamB.jpg",
       user_id = user.id
     ),
     Photo(
       name = "Ahmed Ali",
       caption = "Berlin",
       description = "An exciting part of Berlin. This place covers so many beautiful attractions in the city. From that spot you are already on the famous Oberbaumbrücke, you can see Molecule Man, and right behind me, you can see Berlin's beautiful skyline with the Fernsehturm right in the middle of it with the reflections of the spree.",
-      file = "ahmed-ali-Zl7bVVMEfg.jpg",
+      file = "ahmed.jpg",
       user_id = user.id
     ),
     Photo(
       name = "Hanvin Cheong",
       caption = "Nakano",
       description = "A group of people walking across a street.",
-      file = "hanvin-cheong-9rBj8QYOL1Q.jpg",
+      file = "hanvin.jpg",
       user_id = user.id
     ),
     Photo(
       name = "Ekaterina Bogdan",
       caption = "Bologna",
       description = "A bike parked next to a pole.",
-      file = "ekaterina-bogdan-BKJWsGB5h1s.jpg",
+      file = "ekaterina.jpg",
       user_id = user.id
     ),
     Photo(
       name = "Damian Ochrymowicz",
       caption = "Nazare, Portugal",
-      file = "damian-ochrymowicz-GZQ7tKmEd9c.jpg",
+      file = "damian.jpg",
       user_id = user.id
     ),
     Photo(
       name = "Dima DallAcqua",
       caption = "Alcatraz Island",
       description = "A close up of a green plant.",
-      file = "dima-dallacqua-U8TAGVPFJc4.jpg",
+      file = "dima.jpg",
       user_id = user.id
     ),
     Photo(
       name = "Edgar",
       caption = "Oporto, Portugal",
       description = "A man sitting on a bench at a train station.",
-      file = "edgar-Q0g5Thf7Ank.jpg",
+      file = "edgar.jpg",
       user_id = user.id
     )
   ]
