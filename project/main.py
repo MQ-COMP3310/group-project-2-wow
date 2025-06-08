@@ -18,13 +18,11 @@ import os, re
 # Create the main blueprint
 main = Blueprint("main", __name__)
 
-# Function that removes special characters given an input and returns the according input/type
+# Function that removes special characters given a string input
 def remove_special_characters(input):
+  input_to_sanitise = str(input)
   # Remove special characters
-  clean_input = re.sub(r'[^a-zA-Z0-9\s]', '', input)
-  # Return int or string according to whatever the type for input was
-  if(input.isdigit()):
-    return int(clean_input)
+  clean_input = re.sub(r'[^a-zA-Z0-9\s]', '', input_to_sanitise)
   return clean_input
 
 # Route for homepage
@@ -77,6 +75,7 @@ def newPhoto():
 
     # current_user.id is the new field used for the auth mechanism    
     newPhoto = Photo(
+      # Sanitise form inputs
       name = remove_special_characters(request.form["name"]),
       caption = remove_special_characters(request.form["caption"]),
       description = remove_special_characters(request.form["description"]),
@@ -100,7 +99,10 @@ def newPhoto():
 @main.route("/photo/<int:photo_id>/edit/", methods = ["GET", "POST"])
 @login_required
 def editPhoto(photo_id):
-  photo_id = remove_special_characters(photo_id)
+  # Check if photo_id is an integer
+  if not isinstance(photo_id, int):
+    flash('Invalid photo id for editing')
+    return redirect(url_for("main.homepage"))
   # Query the DB to find the photo that needs to be edited and return a 404 if it can't be found (note the filter_by method also includes the user_id field now)
   # If user is admin, return query for all photos otherwise only the ones that the user owns
   if current_user.is_admin:
@@ -110,6 +112,7 @@ def editPhoto(photo_id):
   
   # Update the photo if the request is POST and photo_id is valid (given form details)
   if request.method == "POST":
+    # Sanitise form inputs
     editedPhoto.name = remove_special_characters(request.form['user'])
     editedPhoto.caption = remove_special_characters(request.form["caption"])
     editedPhoto.description = remove_special_characters(request.form["description"])
@@ -201,8 +204,10 @@ def adminUsersAction(user_id):
 @main.route("/photo/<int:photo_id>/favourite", methods = ["POST"])
 @login_required
 def toggle_favourite(photo_id):
-    # Sanitise photo_id
-    photo_id = remove_special_characters(photo_id)
+    # Check if photo_id is an integer
+    if not isinstance(photo_id, int):
+      flash('Invalid photo id for editing')
+      return redirect(url_for("main.homepage"))
     # If the user is logged in and a POST request is sent to this route then find the photo that the user wants to (un)favourite and commit this change to the DB
     photo = db.session.query(Photo).filter_by(id=photo_id, user_id=current_user.id).first_or_404()
     photo.favourite = not photo.favourite
