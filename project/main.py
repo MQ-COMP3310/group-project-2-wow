@@ -18,6 +18,7 @@ import os, re
 # Create the main blueprint
 main = Blueprint("main", __name__)
 
+# Part 2 Task 7: Implementation of Authentication + Part 3 Task 9: Implementation of Additional Features (Secure Coding Principle)
 # Function that removes special characters given a string input
 def remove_special_characters(input):
   input_to_sanitise = str(input)
@@ -28,6 +29,7 @@ def remove_special_characters(input):
 # Route for homepage
 @main.route("/")
 def homepage():
+  # Part 2 Task 7: Implementation of Authentication
   # Check if the user is logged in and if so then query/filter photos alphabetically (only the ones that match the current user's id)
   # Then return index.html with the photos that were queried from the DB
   # If user is admin then return all photos
@@ -43,7 +45,8 @@ def homepage():
 # Route for uploads given a filtered image name
 @main.route("/uploads/<name>")
 @login_required
-def display_file(name): 
+def display_file(name):
+    # Part 2 Task 7: Implementation of Authentication + Part 3 Task 9: Implementation of Additional Features (Secure Coding Principle)
     safe_name = secure_filename(name)
 
     # Check if the file exists in the database and belongs to the current user
@@ -60,6 +63,7 @@ def display_file(name):
 
     return send_from_directory(current_app.config["UPLOAD_DIR"], safe_name)
 
+# Part 2 Task 7: Implementation of Authentication + Part 3 Task 9: Implementation of Additional Features
 # Route for upload page with GET and POST requests
 @main.route("/upload/", methods = ["GET", "POST"])
 # User is required to be logged in, comes from the LoginManager instance --> this will auto redirect to "auth.login" (set in init.py) if the user isn't logged in
@@ -112,7 +116,7 @@ def newPhoto():
   else:
     return render_template("upload.html")
 
-
+# Part 2 Task 7: Implementation of Authentication + Part 3 Task 9: Implementation of Additional Features
 # Route for editing a photo given the photo id integer (accepts GET and POST requests + login is required)
 @main.route("/photo/<int:photo_id>/edit/", methods = ["GET", "POST"])
 @login_required
@@ -144,7 +148,7 @@ def editPhoto(photo_id):
   else:
     return render_template("edit.html", photo = editedPhoto)
 
-
+# Part 2 Task 7: Implementation of Authentication + Part 3 Task 9: Implementation of Additional Features
 # Handler for the photo deleting route (accepts GET and POST requests + login is required)
 @main.route("/photo/<int:photo_id>/delete/", methods = ["GET"])
 @login_required
@@ -168,6 +172,7 @@ def deletePhoto(photo_id):
   flash('Photo id %s Successfully Deleted' % photo_id)
   return redirect(url_for("main.homepage"))
 
+# Part 3 Task 9: Implementation of Additional Features
 # Route for GET request to admin page where they can modify users
 @main.route("/admin/users/", methods=["GET"])
 @login_required
@@ -218,6 +223,7 @@ def adminUsersAction(user_id):
   flash('User Access Successfully Modified %s' % userToModify.username)
   return redirect('/admin/users')
 
+# Part 3 Task 9: Implementation of Additional Features
 # Route to favourite a photo
 @main.route("/photo/<int:photo_id>/favourite", methods = ["POST"])
 @login_required
@@ -232,6 +238,7 @@ def toggle_favourite(photo_id):
     db.session.commit()
     return redirect(url_for("main.homepage"))
 
+# Part 3 Task 9: Implementation of Additional Features
 # Route to visit the favourites page
 @main.route("/favourites", methods = ["GET"])
 @login_required

@@ -21,7 +21,7 @@ def create_app():
   from .main import main as main_blueprint
   app.register_blueprint(main_blueprint)
 
-  # Import auth blueprint for login/signup/logout routes and register it with the Flask app
+  # Import auth blueprint for login/signup/logout routes and register it with the Flask app (Part 2: Authentication)
   from .auth import auth as auth_blueprint
   app.register_blueprint(auth_blueprint)
 

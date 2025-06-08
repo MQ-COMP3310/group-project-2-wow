@@ -4,6 +4,8 @@ import subprocess
 
 # Run create_app() and run the app on localhost (and all other ports)
 if __name__ == '__main__':
+  # Part 2 Task 7: Implementation of Authentication
+  # Part 3 Task 9: Implementation of Additional Features
   # Install playwright packages
   script_path = 'install_playwright.ps1'
   

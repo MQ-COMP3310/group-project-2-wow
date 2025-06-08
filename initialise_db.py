@@ -16,7 +16,7 @@ def populate_db():
   session.commit()
 
   # Create a photo array instead of adding them one by one to the db
-  # Note: each photo now has a user_id value required now
+  # Part 2 Task 7: Implementation of Authentication (each photo now has a user_id value required now)
   photos = [
     Photo(
       name = "William Warby",

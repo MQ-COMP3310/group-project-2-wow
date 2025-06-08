@@ -4,6 +4,8 @@ from .models import User
 from . import db
 import re
 
+# This file contains the authentication end points required for Part 2: Authentication
+
 # Create a blueprint called auth --> gets used in __init__.py
 auth = Blueprint("auth", __name__)
 

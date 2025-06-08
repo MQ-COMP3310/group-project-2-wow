@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test';
 
 const baseURL = 'http://127.0.0.1:8000';
 
+// This file addresses all the testing required as a part of Part 2 Task 7: Implementation of Authentication + Part 3 Task 9: Implementation of Additional Features
+
 // Authentication Tests
 test('Login Page Loads', async ({ page }) => {
   // Go to login page and expect there to be a form
