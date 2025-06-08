@@ -219,3 +219,40 @@ test('Favourites Functionality', async ({ page }) => {
     await expect(page.locator('.image-box')).toBeVisible();
   }
 });
+
+test('SQL Injection on Login', async ({ page }) => {
+  // Go to login page
+  await page.goto(`${baseURL}/login`);
+
+  // Input SQL injection for login credentials
+  await page.fill('input[name="username"]', `' OR '1'='1`);
+  await page.fill('input[name="password"]', 'any');
+  await page.getByRole('button', { name: 'Login' }).click();
+
+  // Expected output is a flash message
+  await expect(page.locator('.flash-message.message')).toContainText('Invalid username or password.');
+});
+
+test('SQL Injection on Sign Up', async ({ page }) => {
+  // Go to signup page
+  await page.goto(`${baseURL}/signup`);
+
+  // Sign up with SQL injection credentials
+  await page.fill('input[name="username"]', `' OR '1'='1`);
+  await page.fill('input[name="password"]', 'any');
+  await page.getByRole('button', { name: 'Sign Up' }).click();
+
+  // Account should be created given that the input will be sanitised
+  await expect(page.locator('.flash-message.message')).toContainText('Account created.');
+
+  // Go to login page
+  await page.goto(`${baseURL}/login`);
+
+  // Input the same credentials
+  await page.fill('input[name="username"]', `' OR '1'='1`);
+  await page.fill('input[name="password"]', 'any');
+  await page.getByRole('button', { name: 'Login' }).click();
+
+  // User should be logged in given that the inputs will be filtered the same way again
+  await expect(page.locator('.flash-message.message')).toContainText('Logged in successfully.');
+});
