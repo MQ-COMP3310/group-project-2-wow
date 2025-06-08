@@ -35,6 +35,7 @@ def homepage():
 
 # Route for uploads given an image name
 @main.route("/uploads/<name>")
+@login_required
 def display_file(name):
   return send_from_directory(current_app.config["UPLOAD_DIR"], name)
 
