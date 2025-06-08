@@ -44,7 +44,21 @@ def homepage():
 @main.route("/uploads/<name>")
 @login_required
 def display_file(name): 
-  return send_from_directory(current_app.config["UPLOAD_DIR"], secure_filename(name))
+    safe_name = secure_filename(name)
+
+    # Check if the file exists in the database and belongs to the current user
+    photo = db.session.query(Photo).filter_by(file=safe_name).first()
+
+    if not photo:
+        flash("File not found.")
+        return redirect(url_for('main.homepage'))
+
+    # Only allow access if user is the owner or an admin
+    if photo.user_id != current_user.id and not current_user.is_admin:
+        flash("Access denied.")
+        return redirect(url_for('main.homepage'))
+
+    return send_from_directory(current_app.config["UPLOAD_DIR"], safe_name)
 
 # Route for upload page with GET and POST requests
 @main.route("/upload/", methods = ["GET", "POST"])
@@ -132,7 +146,7 @@ def editPhoto(photo_id):
 
 
 # Handler for the photo deleting route (accepts GET and POST requests + login is required)
-@main.route("/photo/<int:photo_id>/delete/", methods = ["GET", "POST"])
+@main.route("/photo/<int:photo_id>/delete/", methods = ["GET"])
 @login_required
 def deletePhoto(photo_id):
   # Query the DB to find the photo that needs to be deleted and if it can't be found then return a 404
