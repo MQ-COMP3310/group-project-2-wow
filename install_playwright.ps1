@@ -1,6 +1,9 @@
 # Part 2 Task 7: Implementation of Authentication
 # Part 3 Task 9: Implementation of Additional Features
-rm -rf node_modules package-lock.json
-npm cache clean --force
-npm install -D @playwright/test
+Write-Host "Installing npm packages..."
+npm install
+
+Write-Host "Installing Playwright browsers..."
 npx playwright install
+
+Write-Host "Done setting up Playwright."
